@@ -25,6 +25,14 @@ function Inbox({ onClose, isLoadingChats }: InboxProps) {
             avatar: "A",
             unreadCount: 2
         },
+        {
+            id: 2,
+            name: "DEF",
+            lastMessage: "Please check this out!",
+            timestamp: "19:32",
+            avatar: "D",
+            unreadCount: 2
+        },
     ]
 
     return (
