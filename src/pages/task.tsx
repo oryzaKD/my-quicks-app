@@ -25,6 +25,14 @@ function Task({ onClose, isLoadingTask }: TaskProps) {
             avatar: "D",
             unreadCount: 2
         },
+        {
+            id: 2,
+            name: "GHI",
+            lastMessage: "Please check this out!",
+            timestamp: "19:32",
+            avatar: "G",
+            unreadCount: 2
+        },
     ]
 
     return (
