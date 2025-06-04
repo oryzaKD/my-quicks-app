@@ -90,7 +90,7 @@ function Button() {
         <Task onClose={closeDialogTask} isLoadingTask={isLoadingTask}/>
       </Dialog>
 
-      {/* Quick Actions Floating Button */}
+      {/* Actions Floating Button */}
       <div className="quick-actions">
         {/* When no dialogs are open, show the toggle button and expandable menu */}
         {!showInboxDialog && !showTaskDialog && (
