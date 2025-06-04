@@ -61,7 +61,7 @@ function Button() {
       setIsLoadingChats(true)
       setShowQuickActions(false)
       
-      // Simulate loading delay
+      
       setTimeout(() => {
         setIsLoadingChats(false)
       }, 2000)
