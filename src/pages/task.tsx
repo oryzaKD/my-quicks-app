@@ -39,14 +39,13 @@ function Task({ onClose, isLoadingTask }: TaskProps) {
         <div className="task">
             {/* Inbox Dialog Modal */}
             <div className="dialog-header">
-                <h2 className="dialog-title">Task</h2>
-                <button className="close-button" onClick={onClose}>×</button>
-            </div>
-            <div className="dialog-body">
                 <div className="search-bar-dialog">
                     <input type="text" placeholder="Search" />
                     <span className="search-icon">🔍</span>
                 </div>
+                <button className="close-button" onClick={onClose}>×</button>
+            </div>
+            <div className="dialog-body">
                 {isLoadingTask ? (
                     <div className="loading-state">
                         <div className="loading-spinner"></div>
