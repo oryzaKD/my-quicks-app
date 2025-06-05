@@ -291,15 +291,15 @@ function Inbox({ onClose }: InboxProps) {
                     <>
                         <div className="search-bar-dialog">
                             <input type="text" placeholder="Search" />
-                            <span className="search-icon"><svg width="32" height="31" viewBox="0 0 32 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <span className="search-icon"><svg width="12" height="12" viewBox="0 0 32 31" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M21.1856 18.9783H22.5486L31.1579 27.6047L28.5872 30.1754L19.9607 21.5662V20.2032L19.4949 19.7201C17.528 21.4109 14.9746 22.4289 12.1968 22.4289C6.00304 22.4289 0.982422 17.4082 0.982422 11.2144C0.982422 5.02061 6.00304 0 12.1968 0C18.3907 0 23.4113 5.02061 23.4113 11.2144C23.4113 13.9922 22.3934 16.5456 20.7026 18.5124L21.1856 18.9783ZM4.433 11.2145C4.433 15.5104 7.90084 18.9783 12.1968 18.9783C16.4928 18.9783 19.9607 15.5104 19.9607 11.2145C19.9607 6.91846 16.4928 3.45062 12.1968 3.45062C7.90084 3.45062 4.433 6.91846 4.433 11.2145Z" fill="#4F4F4F" />
                             </svg>
                             </span>
                         </div>
-                        <button className="close-button" onClick={onClose}><svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        {/* <button className="close-button" onClick={onClose}><svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M21 2.115L18.885 0L10.5 8.385L2.115 0L0 2.115L8.385 10.5L0 18.885L2.115 21L10.5 12.615L18.885 21L21 18.885L12.615 10.5L21 2.115Z" fill="#4F4F4F" />
                         </svg>
-                        </button>
+                        </button> */}
                     </>
                 )}
             </div>
@@ -400,12 +400,23 @@ function Inbox({ onClose }: InboxProps) {
                             chats.map((group: ChatGroup) => (
                                 <div key={group.postId} className="chat-group">
                                     <div className="chat-item-dialog" onClick={() => selectGroup(group)}>
-                                        <div className="chat-avatar">{group.chats[0].avatar}</div>
+                                        <div className="tucked-avatar">
+                                            <button className="tucked-ava back-ava" tabIndex={-1} aria-hidden="true">
+                                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M10.1755 0.0292358C7.39687 0.0292358 5.14629 2.27982 5.14629 5.05848C5.14629 7.83713 7.39687 10.0877 10.1755 10.0877C12.9542 10.0877 15.2048 7.83713 15.2048 5.05848C15.2048 2.27982 12.9542 0.0292358 10.1755 0.0292358ZM12.6901 5.0585C12.6901 3.67546 11.5585 2.54388 10.1755 2.54388C8.79244 2.54388 7.66086 3.67546 7.66086 5.0585C7.66086 6.44154 8.79244 7.57312 10.1755 7.57312C11.5585 7.57312 12.6901 6.44154 12.6901 5.0585ZM17.7193 17.6316C17.4678 16.7389 13.5702 15.117 10.1754 15.117C6.79327 15.117 2.92076 16.7263 2.63158 17.6316H17.7193ZM0.117004 17.6316C0.117004 14.2871 6.81847 12.6023 10.1755 12.6023C13.5325 12.6023 20.234 14.2871 20.234 17.6316V20.1462H0.117004V17.6316Z" fill="black" />
+                                                </svg>
+                                            </button>
+                                            <button className="tucked-ava front-ava" style={{ backgroundColor: '#2F80ED' }}>
+                                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M10.1755 0.0292358C7.39687 0.0292358 5.14629 2.27982 5.14629 5.05848C5.14629 7.83713 7.39687 10.0877 10.1755 10.0877C12.9542 10.0877 15.2048 7.83713 15.2048 5.05848C15.2048 2.27982 12.9542 0.0292358 10.1755 0.0292358ZM12.6901 5.0585C12.6901 3.67546 11.5585 2.54388 10.1755 2.54388C8.79244 2.54388 7.66086 3.67546 7.66086 5.0585C7.66086 6.44154 8.79244 7.57312 10.1755 7.57312C11.5585 7.57312 12.6901 6.44154 12.6901 5.0585ZM17.7193 17.6316C17.4678 16.7389 13.5702 15.117 10.1754 15.117C6.79327 15.117 2.92076 16.7263 2.63158 17.6316H17.7193ZM0.117004 17.6316C0.117004 14.2871 6.81847 12.6023 10.1755 12.6023C13.5325 12.6023 20.234 14.2871 20.234 17.6316V20.1462H0.117004V17.6316Z" fill="white" />
+                                                </svg>
+                                            </button>
+                                        </div>
                                         <div className="chat-info">
-                                            <div className="chat-name">Group {group.postId}</div>
+                                            <div className="chat-name" style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold', fontFamily: 'Lato Bold, Lato, sans-serif', gap: '5px', fontSize: '16px' }}>Group {group.postId} <span style={{ color: '#828282', fontSize: '12px', fontWeight: '400' }}>{group.chats[group.chats.length - 1].timestamp}</span></div>
+                                            <div style={{ color: '#828282', fontSize: '12px', fontWeight: 'bold', fontFamily: 'Lato Bold, Lato, sans-serif' }}>{group.chats[group.chats.length - 1].name} :</div>
                                             <div className="chat-last-message">{group.chats[group.chats.length - 1].lastMessage}</div>
                                         </div>
-                                        <div className="chat-time">{group.chats[group.chats.length - 1].timestamp}</div>
                                     </div>
                                 </div>
                             ))
