@@ -384,8 +384,12 @@ body {
 
 .message-time {
   font-size: 12px;
-  color: #BDBDBD;
-  margin-top: 4px;
+  color: black;
+  margin-top: 6px;
+  align-items: flex-start;
+  display: flex;
+  justify-content: flex-start;
+  font-weight: bold;
 }
 
 /* Message Input */
@@ -515,9 +519,8 @@ body {
   background-color: #ffffff;
   border-radius: 8px;
   width: 600px;
-  max-width: 90vw;
-  height: 600px;
-  max-height: 80vh;
+  max-width: 100vw;
+  height: 650px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   position: relative;
@@ -583,7 +586,7 @@ body {
   font-size: 14px;
 }
 
-.close-button {
+.back-button {
   background: none;
   border: none;
   font-size: 24px;
@@ -596,6 +599,26 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 4px;
+}
+
+.back-button:hover {
+  background-color: #f0f0f0;
+  color: #333333;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: right;
+  justify-content: flex-end;
   border-radius: 4px;
 }
 
@@ -756,15 +779,17 @@ body {
 .date-separator {
   text-align: center;
   margin: 20px 0;
-  color: #999;
+  color: black;
   font-size: 14px;
+  font-weight: 600;
+  margin: 10px 0;
 }
 
 .new-message-separator {
   text-align: center;
-  padding: 10px 0;
+  padding: 20px 0;
   color: #E74C3C;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
   margin: 10px 0;
 }
@@ -791,10 +816,12 @@ body {
   background-color: #ffffff;
   /* padding: 55px 20px; */
   display: flex;
-  gap: 12px;
+  gap: 50px;
   align-items: center;
   margin-bottom: 10px;
   margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
   z-index: 10;
 }
 
