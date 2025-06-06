@@ -213,21 +213,6 @@ function Inbox({ onClose }: InboxProps) {
         }
     }, [selectedGroup, selectedGroup?.chats]);
 
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            setOpenDropdown(null);
-        };
-
-        if (openDropdown !== null) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [openDropdown]);
-
     // Effect to handle new message separators
     useEffect(() => {
         if (selectedGroup) {
@@ -594,10 +579,10 @@ function Inbox({ onClose }: InboxProps) {
                 {selectedGroup ? (
                     <div className="chat-container">
                         <div className="chat-messages" ref={chatMessagesContainerRef}>
-                            {groupMessagesByDate(selectedGroup.chats).map((dateGroup, groupIndex) => (
+                            {groupMessagesByDate(selectedGroup.chats).map((dateGroup) => (
                                 <div key={dateGroup.date}>
                                     <div className="date-separator">{formatDate(dateGroup.date)}</div>
-                                    {dateGroup.messages.map((chat: Chat, index) => (
+                                    {dateGroup.messages.map((chat: Chat) => (
                                         <div key={chat.id}>
                                             {chat.isNew && showNewMessageSeparator[Number(currentNewMessageId)] && 
                                                 <div
