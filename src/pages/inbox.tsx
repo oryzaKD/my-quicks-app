@@ -533,7 +533,7 @@ function Inbox({ onClose }: InboxProps) {
     }, [editingMessageId, editText]);
 
     return (
-        <div className="messaging">
+        <div className="messaging" style={{ margin: '0 auto', background: '#fff', borderRadius: 10, boxShadow: '0 2px 8px #0001', paddingLeft: 30, paddingTop: 0, paddingRight: 30 }}>
             {/* Inbox Dialog Modal */}
             <div className="dialog-header">
                 {selectedGroup ? (
@@ -629,7 +629,7 @@ function Inbox({ onClose }: InboxProps) {
                                                                                 cursor: 'pointer',
                                                                                 fontSize: '14px',
                                                                                 color: '#2F80ED',
-                                                                                borderBottom: '1px solid #F0F0F0'
+                                                                                borderBottom: '1px solid black'
                                                                             }}
                                                                             onMouseDown={(e) => {
                                                                                 e.stopPropagation();
@@ -777,7 +777,7 @@ function Inbox({ onClose }: InboxProps) {
                                                                                 cursor: 'pointer',
                                                                                 fontSize: '14px',
                                                                                 color: '#2F80ED',
-                                                                                borderBottom: '1px solid #F0F0F0'
+                                                                                borderBottom: '1px solid black'
                                                                             }}
                                                                             onClick={() => {
                                                                                 console.log('Share message:', chat.id);
@@ -1069,7 +1069,7 @@ function Inbox({ onClose }: InboxProps) {
                                                 alignItems: 'center',
                                                 gap: '15px',
                                                 cursor: 'pointer',
-                                                borderBottom: '1px solid #E0E0E0'
+                                                borderBottom: '1px solid black'
                                             }}>
                                             <button
                                                 className="avatar-button"
