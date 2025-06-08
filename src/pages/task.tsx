@@ -1,5 +1,5 @@
 import '../App.css'
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import Dropdown from '../components/Dropdown';
 import DateInput from '../components/DateInput';
 import Checkbox from '../components/Checkbox';
@@ -26,10 +26,8 @@ const options = [
     { label: 'Urgent To-Do', value: 'urgent' },
 ];
 
-function Task({ onClose, isLoadingTask }: TaskProps) {
+function Task({ isLoadingTask }: TaskProps) {
     const [selected, setSelected] = useState('');
-    const [date, setDate] = useState('');
-    const [agree, setAgree] = useState(false);
     const [expandedTaskIds, setExpandedTaskIds] = useState<number[]>([]);
     const [editingDescriptionId, setEditingDescriptionId] = useState<number | null>(null);
     const [editingDescriptionValue, setEditingDescriptionValue] = useState('');
@@ -127,6 +125,14 @@ function Task({ onClose, isLoadingTask }: TaskProps) {
             setTasks(tasks.filter(t => t.id !== id));
         }
         setDropdownTaskId(null);
+    };
+
+    const handleTaskDateChange = (taskId: number, newDate: string) => {
+        setTasks(prevTasks =>
+            prevTasks.map(task =>
+                task.id === taskId ? { ...task, dueDate: newDate } : task
+            )
+        );
     };
 
     return (
@@ -232,12 +238,7 @@ function Task({ onClose, isLoadingTask }: TaskProps) {
                                                 </span>
                                                 <DateInput
                                                     value={task.dueDate}
-                                                    onChange={date => {
-                                                        const updated = [...tasks];
-                                                        updated[idx].dueDate = date;
-                                                        setTasks(updated);
-                                                    }}
-                                                    label=""
+                                                    onChange={date => handleTaskDateChange(task.id, date)}
                                                 />
                                             </div>
                                             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginLeft: 35 }}>
@@ -342,7 +343,10 @@ function Task({ onClose, isLoadingTask }: TaskProps) {
                                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M15.2508 2.51465C8.31048 2.51465 2.69031 8.1474 2.69031 15.0877C2.69031 22.0281 8.31048 27.6608 15.2508 27.6608C22.2038 27.6608 27.8365 22.0281 27.8365 15.0877C27.8365 8.1474 22.2038 2.51465 15.2508 2.51465ZM15.2637 25.1462C9.70636 25.1462 5.20519 20.6451 5.20519 15.0878C5.20519 9.53045 9.70636 5.02928 15.2637 5.02928C20.821 5.02928 25.3221 9.53045 25.3221 15.0878C25.3221 20.6451 20.821 25.1462 15.2637 25.1462ZM14.0061 8.80121H15.8921V15.4021L21.55 18.7591L20.607 20.3056L14.0061 16.3451V8.80121Z" fill="#2F80ED" />
                                                     </svg>
                                                     </span>
-                                                    <DateInput value={task.dueDate} onChange={setDate} />
+                                                    <DateInput
+                                                    value={task.dueDate}
+                                                    onChange={date => handleTaskDateChange(task.id, date)}
+                                                />
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginLeft: 35 }}>
                                                     <span style={{ color: '#2F80ED', fontSize: 14, marginRight: 10 }}><svg width="15" height="15" viewBox="0 0 24 23" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -460,7 +464,7 @@ function Task({ onClose, isLoadingTask }: TaskProps) {
                                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M15.2508 2.51465C8.31048 2.51465 2.69031 8.1474 2.69031 15.0877C2.69031 22.0281 8.31048 27.6608 15.2508 27.6608C22.2038 27.6608 27.8365 22.0281 27.8365 15.0877C27.8365 8.1474 22.2038 2.51465 15.2508 2.51465ZM15.2637 25.1462C9.70636 25.1462 5.20519 20.6451 5.20519 15.0878C5.20519 9.53045 9.70636 5.02928 15.2637 5.02928C20.821 5.02928 25.3221 9.53045 25.3221 15.0878C25.3221 20.6451 20.821 25.1462 15.2637 25.1462ZM14.0061 8.80121H15.8921V15.4021L21.55 18.7591L20.607 20.3056L14.0061 16.3451V8.80121Z" fill="#2F80ED" />
                                             </svg>
                                             </span>
-                                            <DateInput value={task.dueDate} onChange={setDate} />
+                                            <DateInput value={task.dueDate} onChange={date => handleTaskDateChange(task.id, date)} />
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 35 }}>
                                             <span style={{ color: '#2F80ED', fontSize: 14, marginRight: 10 }}><svg width="15" height="15" viewBox="0 0 24 23" fill="none" xmlns="http://www.w3.org/2000/svg">
