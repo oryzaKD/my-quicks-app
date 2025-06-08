@@ -10,7 +10,7 @@ interface TaskItem {
     title: string
     description: string
     dueDate: string
-    daysLeft: number
+    daysLeft: number | null
     completed: boolean
     dateCompleted?: string
     isEditing?: boolean
@@ -111,7 +111,7 @@ function Task({ isLoadingTask }: TaskProps) {
             title: '',
             description: '',
             dueDate: '',
-            daysLeft: 7,
+            daysLeft: null,
             completed: false,
             isEditing: true,
         };
@@ -129,15 +129,30 @@ function Task({ isLoadingTask }: TaskProps) {
 
     const handleTaskDateChange = (taskId: number, newDate: string) => {
         setTasks(prevTasks =>
-            prevTasks.map(task =>
-                task.id === taskId ? { ...task, dueDate: newDate } : task
-            )
+            prevTasks.map(task => {
+                let daysLeft: number | null = null;
+                if (newDate) {
+                    const today = new Date();
+                    const due = new Date(newDate);
+                    // Zero out the time for accurate day difference
+                    today.setHours(0, 0, 0, 0);
+                    due.setHours(0, 0, 0, 0);
+                    daysLeft = Math.ceil((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                }
+                return task.id === taskId
+                    ? {
+                        ...task,
+                        dueDate: newDate,
+                        daysLeft: daysLeft
+                    }
+                    : task
+            })
         );
     };
 
     return (
         <div className="task" style={{ margin: '0 auto', background: '#fff', borderRadius: 10, boxShadow: '0 2px 8px #0001', paddingLeft: 30, paddingTop: 0, paddingRight: 30 }}>
-            <div className="dialog-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: 16, marginTop: 0, borderBottom: '1px solid white' }}>
+            <div className="dialog-header">
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-start', width: '100%' }}>
                     <Dropdown options={options} value={selected} onChange={setSelected} label="My Tasks" />
                 </div>
@@ -160,7 +175,7 @@ function Task({ isLoadingTask }: TaskProps) {
                     onClick={handleAddTask}
                 >New Task</button>
             </div>
-            <div className="dialog-body" style={{ height: 540, overflowY: 'auto' }}>
+            <div className="dialog-body">
                 {isLoadingTask ? (
                     <div className="loading-state">
                         <div className="loading-spinner"></div>
@@ -170,7 +185,7 @@ function Task({ isLoadingTask }: TaskProps) {
                     <div>
                         {/* Active Tasks */}
                         {tasks.map((task, idx) => (
-                            <div key={task.id}>
+                            <div  key={task.id}>
                                 {task.isEditing ? (
                                     <>
                                         <div style={{ borderBottom: '1px solid black', padding: '16px 0', display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -193,6 +208,7 @@ function Task({ isLoadingTask }: TaskProps) {
                                                             const updated = [...tasks];
                                                             updated[idx].isEditing = false;
                                                             setTasks(updated);
+                                                            setExpandedTaskIds(prev => prev.includes(task.id) ? prev : [...prev, task.id]);
                                                         }
                                                     }}
                                                     onKeyDown={e => {
@@ -200,6 +216,7 @@ function Task({ isLoadingTask }: TaskProps) {
                                                             const updated = [...tasks];
                                                             updated[idx].isEditing = false;
                                                             setTasks(updated);
+                                                            setExpandedTaskIds(prev => prev.includes(task.id) ? prev : [...prev, task.id]);
                                                         }
                                                     }}
                                                     style={{ width: '325px', fontSize: 14, marginBottom: 8, backgroundColor: 'white', color: 'black', borderRadius: 5, padding: 7, border: '1px solid black' }}
@@ -300,7 +317,9 @@ function Task({ isLoadingTask }: TaskProps) {
                                                 onChange={() => handleCheck(task.id, task.completed)}
                                             />
                                             <span style={{ fontWeight: 600, color: 'black', fontSize: 14, maxWidth: 325, overflow: 'hidden' }}>{task.title}</span>
-                                            <span style={{ color: getDaysLeftColor(task.daysLeft), fontSize: 12, alignItems: 'flex-end', justifyContent: 'flex-end', marginLeft: 'auto' }}>{task.daysLeft} Days Left</span>
+                                            {task.daysLeft !== null && (
+                                                <span style={{ color: getDaysLeftColor(task.daysLeft ?? 0), fontSize: 12, alignItems: 'flex-end', justifyContent: 'flex-end', marginLeft: 'auto' }}>{`${task.daysLeft} Days Left`}</span>
+                                            )}
                                             <span style={{ color: 'black', fontSize: 12, alignItems: 'flex-end', marginRight: 2 }}>{task.dueDate}</span>
                                             <svg width="10" height="8" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"
                                                 style={{ cursor: 'pointer', transform: expandedTaskIds.includes(task.id) ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}
@@ -421,7 +440,9 @@ function Task({ isLoadingTask }: TaskProps) {
                                         onChange={() => handleCheck(task.id, task.completed)}
                                     />
                                     <span style={{ textDecoration: 'line-through', color: '#888', fontWeight: 600, maxWidth: 325, overflow: 'hidden', fontSize: 14 }}>{task.title}</span>
-                                    <span style={{ fontSize: 12, alignItems: 'flex-end', justifyContent: 'flex-end', marginLeft: 'auto', color: 'white' }}>{task.daysLeft} Days Left</span>
+                                    {task.daysLeft !== null && (
+                                        <span style={{ fontSize: 12, alignItems: 'flex-end', justifyContent: 'flex-end', marginLeft: 'auto', color: 'white' }}>{`${task.daysLeft} Days Left`}</span>
+                                    )}
                                     <span style={{ color: 'black', fontSize: 12, alignItems: 'flex-end', marginRight: 2 }}>{task.dueDate}</span>
                                     <svg width="10" height="8" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"
                                         style={{ cursor: 'pointer', transform: expandedTaskIds.includes(task.id) ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}

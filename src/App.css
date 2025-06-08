@@ -542,11 +542,24 @@ body {
 
 .dialog-header {
   display: flex;
-  /* justify-content: space-between;
-  align-items: center; */
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 10px;
+  border-bottom: 1px solid white;
+}
+
+.dialog-header-chat-list {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 0px;
+  margin-top: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
   padding: 16px 20px;
-  border-bottom: 1px solid #E0E0E0;
-  background-color: #ffffff;
+  border-bottom: 1px solid black;
 }
 
 .search-bar-dialog {
@@ -629,6 +642,8 @@ body {
 
 .dialog-body {
   background-color: #ffffff;
+  height: 540px;
+  overflow-y: auto;
 }
 
 .loading-state {
@@ -636,7 +651,9 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
   padding: 60px 20px;
+  margin-bottom: 100px;
   color: #666666;
 }
 
@@ -716,12 +733,9 @@ body {
 
 /* Styles for the chat list and items */
 .chat-group {
-  margin-bottom: 20px;
   border-bottom: 1px solid black;
-  padding-bottom: 10px;
-  padding-top: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding: 10px;
+  gap: 15px;
 }
 
 /* Styles for the search bar for Inbox */
@@ -829,6 +843,7 @@ body {
 .chat-container {
   display: flex;
   flex-direction: column;
+  height: 100%;
   /* max-height: calc(100vh - 120px); */
   /* Adjust based on header height */
 }
