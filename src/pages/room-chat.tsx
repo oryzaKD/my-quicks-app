@@ -238,7 +238,7 @@ function RoomChat({ onBack, onClose, selectedGroup, setSelectedGroup }: RoomChat
                         : chat
                 )
             });
-        }, 2000);
+        }, 5000);
 
         // Only make API call for group chats
         if (new Set(selectedGroup?.chats.map(chat => chat.name)).size > 2) {

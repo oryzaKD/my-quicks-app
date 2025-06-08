@@ -114,6 +114,7 @@ function Task({ isLoadingTask }: TaskProps) {
             daysLeft: null,
             completed: false,
             isEditing: true,
+
         };
         setTasks([...tasks, newTask]);
     };
@@ -185,7 +186,7 @@ function Task({ isLoadingTask }: TaskProps) {
                     <div>
                         {/* Active Tasks */}
                         {tasks.map((task, idx) => (
-                            <div  key={task.id}>
+                            <div key={task.id}>
                                 {task.isEditing ? (
                                     <>
                                         <div style={{ borderBottom: '1px solid black', padding: '16px 0', display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -307,6 +308,15 @@ function Task({ isLoadingTask }: TaskProps) {
                                                     </span>
                                                 )}
                                             </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 35 }}>
+                                                <span style={{ color: 'white', fontSize: 14, marginRight: 10 }}><svg width="15" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.4032 0.833374H5.52334C4.65742 0.833374 3.95681 1.58337 3.95681 2.50004H11.8288C12.6947 2.50004 13.4032 3.25004 13.4032 4.16671V15L14.9776 15.8334V2.50004C14.9776 1.58337 14.2691 0.833374 13.4032 0.833374ZM10.2545 5.83337V16.6417L6.94038 15.1334L6.31849 14.85L5.69661 15.1334L2.38249 16.6417V5.83337H10.2545ZM2.38245 4.16671H10.2545C11.1204 4.16671 11.8289 4.91671 11.8289 5.83337V19.1667L6.31845 16.6667L0.808044 19.1667V5.83337C0.808044 4.91671 1.51653 4.16671 2.38245 4.16671Z" fill="#2F80ED" />
+                                                </svg>
+                                                </span>
+                                                <div>
+                                                    <CustomDropdown />
+                                                </div>
+                                            </div>
                                         </div>
                                     </>
                                 ) : (
@@ -317,43 +327,81 @@ function Task({ isLoadingTask }: TaskProps) {
                                                 onChange={() => handleCheck(task.id, task.completed)}
                                             />
                                             <span style={{ fontWeight: 600, color: 'black', fontSize: 14, maxWidth: 325, overflow: 'hidden' }}>{task.title}</span>
-                                            {task.daysLeft !== null && (
-                                                <span style={{ color: getDaysLeftColor(task.daysLeft ?? 0), fontSize: 12, alignItems: 'flex-end', justifyContent: 'flex-end', marginLeft: 'auto' }}>{`${task.daysLeft} Days Left`}</span>
-                                            )}
-                                            <span style={{ color: 'black', fontSize: 12, alignItems: 'flex-end', marginRight: 2 }}>{task.dueDate}</span>
-                                            <svg width="10" height="8" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"
-                                                style={{ cursor: 'pointer', transform: expandedTaskIds.includes(task.id) ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}
-                                                onClick={() => {
-                                                    setExpandedTaskIds(prev =>
-                                                        prev.includes(task.id)
-                                                            ? prev.filter(id => id !== task.id)
-                                                            : [...prev, task.id]
-                                                    );
-                                                }}
-                                            >
-                                                <path d="M1.175 7.0875L5 3.27084L8.825 7.0875L10 5.9125L5 0.912503L-1.02722e-07 5.9125L1.175 7.0875Z" fill="#4F4F4F" />
-                                            </svg>
-                                            <div style={{ position: 'relative', display: 'inline-block' }}>
-                                                <svg width="14" height="4" viewBox="0 0 14 4" fill="none" xmlns="http://www.w3.org/2000/svg"
-                                                    style={{ cursor: 'pointer' }}
-                                                    onClick={e => {
-                                                        e.stopPropagation();
-                                                        setDropdownTaskId(task.id === dropdownTaskId ? null : task.id);
-                                                    }}
-                                                >
-                                                    <path fillRule="evenodd" clipRule="evenodd" d="M10.5 1.75C10.5 2.7125 11.2875 3.5 12.25 3.5C13.2125 3.5 14 2.7125 14 1.75C14 0.7875 13.2125 -3.44227e-08 12.25 -7.64949e-08C11.2875 -1.18567e-07 10.5 0.7875 10.5 1.75ZM8.75 1.75C8.75 0.7875 7.9625 -2.63908e-07 7 -3.0598e-07C6.0375 -3.48052e-07 5.25 0.7875 5.25 1.75C5.25 2.7125 6.0375 3.5 7 3.5C7.9625 3.5 8.75 2.7125 8.75 1.75ZM1.75 -5.35465e-07C2.7125 -4.93392e-07 3.5 0.7875 3.5 1.75C3.5 2.7125 2.7125 3.5 1.75 3.5C0.7875 3.5 -1.18567e-07 2.7125 -7.64949e-08 1.75C-3.44227e-08 0.787499 0.7875 -5.77537e-07 1.75 -5.35465e-07Z" fill="#828282" />
-                                                </svg>
-                                                {dropdownTaskId === task.id && (
-                                                    <div style={{ position: 'absolute', background: 'white', border: '1px solid #ccc', borderRadius: 4, boxShadow: '0 2px 8px #0002', zIndex: 10, transform: 'translateX(-90%)', top: 22 }}>
-                                                        <div
-                                                            style={{ padding: '8px 16px', cursor: 'pointer', color: 'red', whiteSpace: 'nowrap' }}
-                                                            onClick={() => handleDeleteTask(task.id, task.completed)}
+                                            {task.daysLeft !== null ? (
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 'auto' }}>
+                                                    <span style={{ color: getDaysLeftColor(task.daysLeft ?? 0), fontSize: 12, alignItems: 'flex-end', justifyContent: 'flex-end', marginLeft: 'auto' }}>{`${task.daysLeft} Days Left`}</span>
+                                                    <span style={{ color: 'black', fontSize: 12, alignItems: 'flex-end', marginRight: 2 }}>{task.dueDate}</span>
+                                                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"
+                                                        style={{ cursor: 'pointer', transform: expandedTaskIds.includes(task.id) ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}
+                                                        onClick={() => {
+                                                            setExpandedTaskIds(prev =>
+                                                                prev.includes(task.id)
+                                                                    ? prev.filter(id => id !== task.id)
+                                                                    : [...prev, task.id]
+                                                            );
+                                                        }}
+                                                    >
+                                                        <path d="M1.175 7.0875L5 3.27084L8.825 7.0875L10 5.9125L5 0.912503L-1.02722e-07 5.9125L1.175 7.0875Z" fill="#4F4F4F" />
+                                                    </svg>
+                                                    <div style={{ position: 'relative', display: 'inline-block' }}>
+                                                        <svg width="14" height="4" viewBox="0 0 14 4" fill="none" xmlns="http://www.w3.org/2000/svg"
+                                                            style={{ cursor: 'pointer' }}
+                                                            onClick={e => {
+                                                                e.stopPropagation();
+                                                                setDropdownTaskId(task.id === dropdownTaskId ? null : task.id);
+                                                            }}
                                                         >
-                                                            Delete
-                                                        </div>
+                                                            <path fillRule="evenodd" clipRule="evenodd" d="M10.5 1.75C10.5 2.7125 11.2875 3.5 12.25 3.5C13.2125 3.5 14 2.7125 14 1.75C14 0.7875 13.2125 -3.44227e-08 12.25 -7.64949e-08C11.2875 -1.18567e-07 10.5 0.7875 10.5 1.75ZM8.75 1.75C8.75 0.7875 7.9625 -2.63908e-07 7 -3.0598e-07C6.0375 -3.48052e-07 5.25 0.7875 5.25 1.75C5.25 2.7125 6.0375 3.5 7 3.5C7.9625 3.5 8.75 2.7125 8.75 1.75ZM1.75 -5.35465e-07C2.7125 -4.93392e-07 3.5 0.7875 3.5 1.75C3.5 2.7125 2.7125 3.5 1.75 3.5C0.7875 3.5 -1.18567e-07 2.7125 -7.64949e-08 1.75C-3.44227e-08 0.787499 0.7875 -5.77537e-07 1.75 -5.35465e-07Z" fill="#828282" />
+                                                        </svg>
+                                                        {dropdownTaskId === task.id && (
+                                                            <div style={{ position: 'absolute', background: 'white', border: '1px solid #ccc', borderRadius: 4, boxShadow: '0 2px 8px #0002', zIndex: 10, transform: 'translateX(-90%)', top: 22 }}>
+                                                                <div
+                                                                    style={{ padding: '8px 16px', cursor: 'pointer', color: 'red', whiteSpace: 'nowrap' }}
+                                                                    onClick={() => handleDeleteTask(task.id, task.completed)}
+                                                                >
+                                                                    Delete
+                                                                </div>
+                                                            </div>
+                                                        )}
                                                     </div>
-                                                )}
-                                            </div>
+                                                </div>
+                                            ) : (
+                                                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, marginLeft: 'auto' }}>
+                                                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg"
+                                                        style={{ marginBottom: 10, cursor: 'pointer', transform: expandedTaskIds.includes(task.id) ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}
+                                                        onClick={() => {
+                                                            setExpandedTaskIds(prev =>
+                                                                prev.includes(task.id)
+                                                                    ? prev.filter(id => id !== task.id)
+                                                                    : [...prev, task.id]
+                                                            );
+                                                        }}
+                                                    >
+                                                        <path d="M1.175 7.0875L5 3.27084L8.825 7.0875L10 5.9125L5 0.912503L-1.02722e-07 5.9125L1.175 7.0875Z" fill="#4F4F4F" />
+                                                    </svg>
+                                                    <div style={{ position: 'relative', display: 'inline-block' }}>
+                                                        <svg width="14" height="4" viewBox="0 0 14 4" fill="none" xmlns="http://www.w3.org/2000/svg"
+                                                            style={{ cursor: 'pointer' }}
+                                                            onClick={e => {
+                                                                e.stopPropagation();
+                                                                setDropdownTaskId(task.id === dropdownTaskId ? null : task.id);
+                                                            }}
+                                                        >
+                                                            <path fillRule="evenodd" clipRule="evenodd" d="M10.5 1.75C10.5 2.7125 11.2875 3.5 12.25 3.5C13.2125 3.5 14 2.7125 14 1.75C14 0.7875 13.2125 -3.44227e-08 12.25 -7.64949e-08C11.2875 -1.18567e-07 10.5 0.7875 10.5 1.75ZM8.75 1.75C8.75 0.7875 7.9625 -2.63908e-07 7 -3.0598e-07C6.0375 -3.48052e-07 5.25 0.7875 5.25 1.75C5.25 2.7125 6.0375 3.5 7 3.5C7.9625 3.5 8.75 2.7125 8.75 1.75ZM1.75 -5.35465e-07C2.7125 -4.93392e-07 3.5 0.7875 3.5 1.75C3.5 2.7125 2.7125 3.5 1.75 3.5C0.7875 3.5 -1.18567e-07 2.7125 -7.64949e-08 1.75C-3.44227e-08 0.787499 0.7875 -5.77537e-07 1.75 -5.35465e-07Z" fill="#828282" />
+                                                        </svg>
+                                                        {dropdownTaskId === task.id && (
+                                                            <div style={{ position: 'absolute', background: 'white', border: '1px solid #ccc', borderRadius: 4, boxShadow: '0 2px 8px #0002', zIndex: 10, transform: 'translateX(-90%)', top: 22 }}>
+                                                                <div
+                                                                    style={{ padding: '8px 16px', cursor: 'pointer', color: 'red', whiteSpace: 'nowrap' }}
+                                                                    onClick={() => handleDeleteTask(task.id, task.completed)}
+                                                                >
+                                                                    Delete
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                         {expandedTaskIds.includes(task.id) && (
                                             <>
@@ -363,9 +411,9 @@ function Task({ isLoadingTask }: TaskProps) {
                                                     </svg>
                                                     </span>
                                                     <DateInput
-                                                    value={task.dueDate}
-                                                    onChange={date => handleTaskDateChange(task.id, date)}
-                                                />
+                                                        value={task.dueDate}
+                                                        onChange={date => handleTaskDateChange(task.id, date)}
+                                                    />
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginLeft: 35 }}>
                                                     <span style={{ color: '#2F80ED', fontSize: 14, marginRight: 10 }}><svg width="15" height="15" viewBox="0 0 24 23" fill="none" xmlns="http://www.w3.org/2000/svg">
