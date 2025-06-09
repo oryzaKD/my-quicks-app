@@ -43,8 +43,8 @@ function Inbox({ onClose }: InboxProps) {
                     hour12: false,
                 });
 
-                const today = new Date().toISOString().split('T')[0];
-                const date = new Date(today);
+                const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+                const date = new Date(yesterday);
                 const formatter = new Intl.DateTimeFormat("en-US", {
                     day: "numeric",
                     month: "long",

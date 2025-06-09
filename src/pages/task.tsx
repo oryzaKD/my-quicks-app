@@ -4,6 +4,7 @@ import Dropdown from '../components/Dropdown';
 import DateInput from '../components/DateInput';
 import Checkbox from '../components/Checkbox';
 import CustomDropdown from '../components/CustomDropdown';
+import Textarea from '../components/Textarea';
 
 interface TaskItem {
     id: number
@@ -32,6 +33,7 @@ function Task({ isLoadingTask }: TaskProps) {
     const [editingDescriptionId, setEditingDescriptionId] = useState<number | null>(null);
     const [editingDescriptionValue, setEditingDescriptionValue] = useState('');
     const [dropdownTaskId, setDropdownTaskId] = useState<number | null>(null);
+    const [dropdownValue, setDropdownValue] = useState<string | null>(null);
 
     const [tasks, setTasks] = useState<TaskItem[]>([
         {
@@ -251,7 +253,12 @@ function Task({ isLoadingTask }: TaskProps) {
                                             </div>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 35 }}>
                                                 <span style={{ color: 'white', fontSize: 14, marginRight: 10 }}><svg width="17" height="17" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M15.2508 2.51465C8.31048 2.51465 2.69031 8.1474 2.69031 15.0877C2.69031 22.0281 8.31048 27.6608 15.2508 27.6608C22.2038 27.6608 27.8365 22.0281 27.8365 15.0877C27.8365 8.1474 22.2038 2.51465 15.2508 2.51465ZM15.2637 25.1462C9.70636 25.1462 5.20519 20.6451 5.20519 15.0878C5.20519 9.53045 9.70636 5.02928 15.2637 5.02928C20.821 5.02928 25.3221 9.53045 25.3221 15.0878C25.3221 20.6451 20.821 25.1462 15.2637 25.1462ZM14.0061 8.80121H15.8921V15.4021L21.55 18.7591L20.607 20.3056L14.0061 16.3451V8.80121Z" fill="#2F80ED" />
+                                                    <path
+                                                        fillRule="evenodd"
+                                                        clipRule="evenodd"
+                                                        d="M15.2508 2.51465C8.31048 2.51465 2.69031 8.1474 2.69031 15.0877C2.69031 22.0281 8.31048 27.6608 15.2508 27.6608C22.2038 27.6608 27.8365 22.0281 27.8365 15.0877C27.8365 8.1474 22.2038 2.51465 15.2508 2.51465ZM15.2637 25.1462C9.70636 25.1462 5.20519 20.6451 5.20519 15.0878C5.20519 9.53045 9.70636 5.02928 15.2637 5.02928C20.821 5.02928 25.3221 9.53045 25.3221 15.0878C25.3221 20.6451 20.821 25.1462 15.2637 25.1462ZM14.0061 8.80121H15.8921V15.4021L21.55 18.7591L20.607 20.3056L14.0061 16.3451V8.80121Z"
+                                                        fill={task.dueDate ? "#2F80ED" : "black"}
+                                                    />
                                                 </svg>
                                                 </span>
                                                 <DateInput
@@ -261,15 +268,18 @@ function Task({ isLoadingTask }: TaskProps) {
                                             </div>
                                             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginLeft: 35 }}>
                                                 <span style={{ color: '#2F80ED', fontSize: 14, marginRight: 10 }}><svg width="15" height="15" viewBox="0 0 24 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3092 0C18.9949 0 18.668 0.125731 18.4291 0.36462L16.1282 2.6655L20.8431 7.38041L23.144 5.07953C23.6343 4.58918 23.6343 3.79708 23.144 3.30673L20.2019 0.36462C19.9504 0.113158 19.6361 0 19.3092 0ZM14.7831 7.569L15.9398 8.72573L4.54857 20.117H3.39185V18.9602L14.7831 7.569ZM0.877197 17.9167L14.783 4.01081L19.498 8.72572L5.59211 22.6316H0.877197V17.9167Z" fill="#2F80ED" />
+                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3092 0C18.9949 0 18.668 0.125731 18.4291 0.36462L16.1282 2.6655L20.8431 7.38041L23.144 5.07953C23.6343 4.58918 23.6343 3.79708 23.144 3.30673L20.2019 0.36462C19.9504 0.113158 19.6361 0 19.3092 0ZM14.7831 7.569L15.9398 8.72573L4.54857 20.117H3.39185V18.9602L14.7831 7.569ZM0.877197 17.9167L14.783 4.01081L19.498 8.72572L5.59211 22.6316H0.877197V17.9167Z"
+                                                        fill={task.description ? "#2F80ED" : "black"} />
                                                 </svg>
                                                 </span>
                                                 {editingDescriptionId === task.id ? (
-                                                    <textarea
+                                                    <Textarea
                                                         value={editingDescriptionValue}
-                                                        autoFocus
-                                                        rows={2}
-                                                        onChange={e => setEditingDescriptionValue(e.target.value)}
+                                                        onChange={setEditingDescriptionValue}
+                                                        label="Description"
+                                                        placeholder="Description..."
+                                                        maxLength={1000}
+                                                        rows={5}
                                                         onKeyDown={e => {
                                                             if (e.key === 'Enter' && !e.shiftKey) {
                                                                 e.preventDefault();
@@ -293,12 +303,10 @@ function Task({ isLoadingTask }: TaskProps) {
                                                             }
                                                         }}
                                                         onBlur={() => setEditingDescriptionId(null)}
-                                                        style={{ width: '325px', fontSize: 12, marginBottom: 8, backgroundColor: 'white', color: 'black', borderRadius: 5, padding: 7, border: '1px solid black', resize: 'vertical' }}
-                                                        placeholder="No Description"
                                                     />
                                                 ) : (
                                                     <span
-                                                        style={{ color: 'black', fontSize: 12, maxWidth: 480, overflow: 'hidden', textAlign: 'justify', cursor: 'pointer' }}
+                                                        style={{ color: 'black', fontSize: 12, width: 480, overflow: 'hidden', textAlign: 'justify', cursor: 'pointer' }}
                                                         onClick={() => {
                                                             setEditingDescriptionId(task.id);
                                                             setEditingDescriptionValue(task.description === 'No Description' ? '' : task.description);
@@ -310,11 +318,12 @@ function Task({ isLoadingTask }: TaskProps) {
                                             </div>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 35 }}>
                                                 <span style={{ color: 'white', fontSize: 14, marginRight: 10 }}><svg width="15" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.4032 0.833374H5.52334C4.65742 0.833374 3.95681 1.58337 3.95681 2.50004H11.8288C12.6947 2.50004 13.4032 3.25004 13.4032 4.16671V15L14.9776 15.8334V2.50004C14.9776 1.58337 14.2691 0.833374 13.4032 0.833374ZM10.2545 5.83337V16.6417L6.94038 15.1334L6.31849 14.85L5.69661 15.1334L2.38249 16.6417V5.83337H10.2545ZM2.38245 4.16671H10.2545C11.1204 4.16671 11.8289 4.91671 11.8289 5.83337V19.1667L6.31845 16.6667L0.808044 19.1667V5.83337C0.808044 4.91671 1.51653 4.16671 2.38245 4.16671Z" fill="#2F80ED" />
+                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.4032 0.833374H5.52334C4.65742 0.833374 3.95681 1.58337 3.95681 2.50004H11.8288C12.6947 2.50004 13.4032 3.25004 13.4032 4.16671V15L14.9776 15.8334V2.50004C14.9776 1.58337 14.2691 0.833374 13.4032 0.833374ZM10.2545 5.83337V16.6417L6.94038 15.1334L6.31849 14.85L5.69661 15.1334L2.38249 16.6417V5.83337H10.2545ZM2.38245 4.16671H10.2545C11.1204 4.16671 11.8289 4.91671 11.8289 5.83337V19.1667L6.31845 16.6667L0.808044 19.1667V5.83337C0.808044 4.91671 1.51653 4.16671 2.38245 4.16671Z"
+                                                        fill={dropdownValue && dropdownValue.length > 0 ? "#2F80ED" : "black"} />
                                                 </svg>
                                                 </span>
                                                 <div>
-                                                    <CustomDropdown />
+                                                    <CustomDropdown value={dropdownValue} onChange={setDropdownValue} />
                                                 </div>
                                             </div>
                                         </div>
@@ -407,7 +416,12 @@ function Task({ isLoadingTask }: TaskProps) {
                                             <>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 35 }}>
                                                     <span style={{ color: 'white', fontSize: 14, marginRight: 10 }}><svg width="17" height="17" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M15.2508 2.51465C8.31048 2.51465 2.69031 8.1474 2.69031 15.0877C2.69031 22.0281 8.31048 27.6608 15.2508 27.6608C22.2038 27.6608 27.8365 22.0281 27.8365 15.0877C27.8365 8.1474 22.2038 2.51465 15.2508 2.51465ZM15.2637 25.1462C9.70636 25.1462 5.20519 20.6451 5.20519 15.0878C5.20519 9.53045 9.70636 5.02928 15.2637 5.02928C20.821 5.02928 25.3221 9.53045 25.3221 15.0878C25.3221 20.6451 20.821 25.1462 15.2637 25.1462ZM14.0061 8.80121H15.8921V15.4021L21.55 18.7591L20.607 20.3056L14.0061 16.3451V8.80121Z" fill="#2F80ED" />
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            clipRule="evenodd"
+                                                            d="M15.2508 2.51465C8.31048 2.51465 2.69031 8.1474 2.69031 15.0877C2.69031 22.0281 8.31048 27.6608 15.2508 27.6608C22.2038 27.6608 27.8365 22.0281 27.8365 15.0877C27.8365 8.1474 22.2038 2.51465 15.2508 2.51465ZM15.2637 25.1462C9.70636 25.1462 5.20519 20.6451 5.20519 15.0878C5.20519 9.53045 9.70636 5.02928 15.2637 5.02928C20.821 5.02928 25.3221 9.53045 25.3221 15.0878C25.3221 20.6451 20.821 25.1462 15.2637 25.1462ZM14.0061 8.80121H15.8921V15.4021L21.55 18.7591L20.607 20.3056L14.0061 16.3451V8.80121Z"
+                                                            fill={task.dueDate ? "#2F80ED" : "black"}
+                                                        />
                                                     </svg>
                                                     </span>
                                                     <DateInput
@@ -417,15 +431,18 @@ function Task({ isLoadingTask }: TaskProps) {
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginLeft: 35 }}>
                                                     <span style={{ color: '#2F80ED', fontSize: 14, marginRight: 10 }}><svg width="15" height="15" viewBox="0 0 24 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3092 0C18.9949 0 18.668 0.125731 18.4291 0.36462L16.1282 2.6655L20.8431 7.38041L23.144 5.07953C23.6343 4.58918 23.6343 3.79708 23.144 3.30673L20.2019 0.36462C19.9504 0.113158 19.6361 0 19.3092 0ZM14.7831 7.569L15.9398 8.72573L4.54857 20.117H3.39185V18.9602L14.7831 7.569ZM0.877197 17.9167L14.783 4.01081L19.498 8.72572L5.59211 22.6316H0.877197V17.9167Z" fill="#2F80ED" />
+                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3092 0C18.9949 0 18.668 0.125731 18.4291 0.36462L16.1282 2.6655L20.8431 7.38041L23.144 5.07953C23.6343 4.58918 23.6343 3.79708 23.144 3.30673L20.2019 0.36462C19.9504 0.113158 19.6361 0 19.3092 0ZM14.7831 7.569L15.9398 8.72573L4.54857 20.117H3.39185V18.9602L14.7831 7.569ZM0.877197 17.9167L14.783 4.01081L19.498 8.72572L5.59211 22.6316H0.877197V17.9167Z"
+                                                        fill={task.description ? "#2F80ED" : "black"} />
                                                     </svg>
                                                     </span>
                                                     {editingDescriptionId === task.id ? (
-                                                        <textarea
+                                                        <Textarea
                                                             value={editingDescriptionValue}
-                                                            autoFocus
-                                                            rows={2}
-                                                            onChange={e => setEditingDescriptionValue(e.target.value)}
+                                                            onChange={setEditingDescriptionValue}
+                                                            label="Description"
+                                                            placeholder="Description..."
+                                                            maxLength={200}
+                                                            rows={5}
                                                             onKeyDown={e => {
                                                                 if (e.key === 'Enter' && !e.shiftKey) {
                                                                     e.preventDefault();
@@ -449,12 +466,10 @@ function Task({ isLoadingTask }: TaskProps) {
                                                                 }
                                                             }}
                                                             onBlur={() => setEditingDescriptionId(null)}
-                                                            style={{ width: '325px', fontSize: 12, marginBottom: 8, backgroundColor: 'white', color: 'black', borderRadius: 5, padding: 7, border: '1px solid black', resize: 'vertical' }}
-                                                            placeholder="No Description"
                                                         />
                                                     ) : (
                                                         <span
-                                                            style={{ color: 'black', fontSize: 12, maxWidth: 480, overflow: 'hidden', textAlign: 'justify', cursor: 'pointer' }}
+                                                            style={{ color: 'black', fontSize: 12, width: 480, overflow: 'hidden', textAlign: 'justify', cursor: 'pointer' }}
                                                             onClick={() => {
                                                                 setEditingDescriptionId(task.id);
                                                                 setEditingDescriptionValue(task.description === 'No Description' ? '' : task.description);
@@ -466,11 +481,12 @@ function Task({ isLoadingTask }: TaskProps) {
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 35 }}>
                                                     <span style={{ color: 'white', fontSize: 14, marginRight: 10 }}><svg width="15" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M13.4032 0.833374H5.52334C4.65742 0.833374 3.95681 1.58337 3.95681 2.50004H11.8288C12.6947 2.50004 13.4032 3.25004 13.4032 4.16671V15L14.9776 15.8334V2.50004C14.9776 1.58337 14.2691 0.833374 13.4032 0.833374ZM10.2545 5.83337V16.6417L6.94038 15.1334L6.31849 14.85L5.69661 15.1334L2.38249 16.6417V5.83337H10.2545ZM2.38245 4.16671H10.2545C11.1204 4.16671 11.8289 4.91671 11.8289 5.83337V19.1667L6.31845 16.6667L0.808044 19.1667V5.83337C0.808044 4.91671 1.51653 4.16671 2.38245 4.16671Z" fill="#2F80ED" />
+                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M13.4032 0.833374H5.52334C4.65742 0.833374 3.95681 1.58337 3.95681 2.50004H11.8288C12.6947 2.50004 13.4032 3.25004 13.4032 4.16671V15L14.9776 15.8334V2.50004C14.9776 1.58337 14.2691 0.833374 13.4032 0.833374ZM10.2545 5.83337V16.6417L6.94038 15.1334L6.31849 14.85L5.69661 15.1334L2.38249 16.6417V5.83337H10.2545ZM2.38245 4.16671H10.2545C11.1204 4.16671 11.8289 4.91671 11.8289 5.83337V19.1667L6.31845 16.6667L0.808044 19.1667V5.83337C0.808044 4.91671 1.51653 4.16671 2.38245 4.16671Z"
+                                                        fill={dropdownValue && dropdownValue.length > 0 ? "#2F80ED" : "black"} />
                                                     </svg>
                                                     </span>
                                                     <div>
-                                                        <CustomDropdown />
+                                                        <CustomDropdown value={dropdownValue} onChange={setDropdownValue} />
                                                     </div>
                                                 </div>
                                             </>
@@ -530,22 +546,30 @@ function Task({ isLoadingTask }: TaskProps) {
                                     <>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 35 }}>
                                             <span style={{ color: 'white', fontSize: 14, marginRight: 10 }}><svg width="17" height="17" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M15.2508 2.51465C8.31048 2.51465 2.69031 8.1474 2.69031 15.0877C2.69031 22.0281 8.31048 27.6608 15.2508 27.6608C22.2038 27.6608 27.8365 22.0281 27.8365 15.0877C27.8365 8.1474 22.2038 2.51465 15.2508 2.51465ZM15.2637 25.1462C9.70636 25.1462 5.20519 20.6451 5.20519 15.0878C5.20519 9.53045 9.70636 5.02928 15.2637 5.02928C20.821 5.02928 25.3221 9.53045 25.3221 15.0878C25.3221 20.6451 20.821 25.1462 15.2637 25.1462ZM14.0061 8.80121H15.8921V15.4021L21.55 18.7591L20.607 20.3056L14.0061 16.3451V8.80121Z" fill="#2F80ED" />
+                                                <path
+                                                    fillRule="evenodd"
+                                                    clipRule="evenodd"
+                                                    d="M15.2508 2.51465C8.31048 2.51465 2.69031 8.1474 2.69031 15.0877C2.69031 22.0281 8.31048 27.6608 15.2508 27.6608C22.2038 27.6608 27.8365 22.0281 27.8365 15.0877C27.8365 8.1474 22.2038 2.51465 15.2508 2.51465ZM15.2637 25.1462C9.70636 25.1462 5.20519 20.6451 5.20519 15.0878C5.20519 9.53045 9.70636 5.02928 15.2637 5.02928C20.821 5.02928 25.3221 9.53045 25.3221 15.0878C25.3221 20.6451 20.821 25.1462 15.2637 25.1462ZM14.0061 8.80121H15.8921V15.4021L21.55 18.7591L20.607 20.3056L14.0061 16.3451V8.80121Z"
+                                                    fill={task.dueDate ? "#2F80ED" : "black"}
+                                                />
                                             </svg>
                                             </span>
                                             <DateInput value={task.dueDate} onChange={date => handleTaskDateChange(task.id, date)} />
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 35 }}>
                                             <span style={{ color: '#2F80ED', fontSize: 14, marginRight: 10 }}><svg width="15" height="15" viewBox="0 0 24 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3092 0C18.9949 0 18.668 0.125731 18.4291 0.36462L16.1282 2.6655L20.8431 7.38041L23.144 5.07953C23.6343 4.58918 23.6343 3.79708 23.144 3.30673L20.2019 0.36462C19.9504 0.113158 19.6361 0 19.3092 0ZM14.7831 7.569L15.9398 8.72573L4.54857 20.117H3.39185V18.9602L14.7831 7.569ZM0.877197 17.9167L14.783 4.01081L19.498 8.72572L5.59211 22.6316H0.877197V17.9167Z" fill="#2F80ED" />
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3092 0C18.9949 0 18.668 0.125731 18.4291 0.36462L16.1282 2.6655L20.8431 7.38041L23.144 5.07953C23.6343 4.58918 23.6343 3.79708 23.144 3.30673L20.2019 0.36462C19.9504 0.113158 19.6361 0 19.3092 0ZM14.7831 7.569L15.9398 8.72573L4.54857 20.117H3.39185V18.9602L14.7831 7.569ZM0.877197 17.9167L14.783 4.01081L19.498 8.72572L5.59211 22.6316H0.877197V17.9167Z"
+                                                fill={task.description ? "#2F80ED" : "black"} />
                                             </svg>
                                             </span>
                                             {editingDescriptionId === task.id ? (
-                                                <textarea
+                                                <Textarea
                                                     value={editingDescriptionValue}
-                                                    autoFocus
-                                                    rows={2}
-                                                    onChange={e => setEditingDescriptionValue(e.target.value)}
+                                                    onChange={setEditingDescriptionValue}
+                                                    label="Description"
+                                                    placeholder="Description..."
+                                                    maxLength={200}
+                                                    rows={5}
                                                     onKeyDown={e => {
                                                         if (e.key === 'Enter' && !e.shiftKey) {
                                                             e.preventDefault();
@@ -569,12 +593,10 @@ function Task({ isLoadingTask }: TaskProps) {
                                                         }
                                                     }}
                                                     onBlur={() => setEditingDescriptionId(null)}
-                                                    style={{ width: '325px', fontSize: 12, marginBottom: 8, backgroundColor: 'white', color: 'black', borderRadius: 5, padding: 7, border: '1px solid black', resize: 'vertical' }}
-                                                    placeholder="No Description"
                                                 />
                                             ) : (
                                                 <span
-                                                    style={{ color: 'black', fontSize: 12, maxWidth: 480, overflow: 'hidden', textAlign: 'justify', cursor: 'pointer' }}
+                                                    style={{ color: 'black', fontSize: 12, width: 480, overflow: 'hidden', textAlign: 'justify', cursor: 'pointer' }}
                                                     onClick={() => {
                                                         setEditingDescriptionId(task.id);
                                                         setEditingDescriptionValue(task.description === 'No Description' ? '' : task.description);
@@ -583,6 +605,16 @@ function Task({ isLoadingTask }: TaskProps) {
                                                     {task.description && task.description.trim() ? task.description : 'No Description'}
                                                 </span>
                                             )}
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 35 }}>
+                                            <span style={{ color: 'white', fontSize: 14, marginRight: 10 }}><svg width="15" height="20" viewBox="0 0 15 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M13.4032 0.833374H5.52334C4.65742 0.833374 3.95681 1.58337 3.95681 2.50004H11.8288C12.6947 2.50004 13.4032 3.25004 13.4032 4.16671V15L14.9776 15.8334V2.50004C14.9776 1.58337 14.2691 0.833374 13.4032 0.833374ZM10.2545 5.83337V16.6417L6.94038 15.1334L6.31849 14.85L5.69661 15.1334L2.38249 16.6417V5.83337H10.2545ZM2.38245 4.16671H10.2545C11.1204 4.16671 11.8289 4.91671 11.8289 5.83337V19.1667L6.31845 16.6667L0.808044 19.1667V5.83337C0.808044 4.91671 1.51653 4.16671 2.38245 4.16671Z"
+                                                fill={dropdownValue && dropdownValue.length > 0 ? "#2F80ED" : "black"} />
+                                            </svg>
+                                            </span>
+                                            <div>
+                                                <CustomDropdown value={dropdownValue} onChange={setDropdownValue} />
+                                            </div>
                                         </div>
                                     </>
                                 )}

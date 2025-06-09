@@ -37,6 +37,9 @@ function RoomChat({ onBack, onClose, selectedGroup, setSelectedGroup }: RoomChat
     const newMessageSeparatorRef = useRef<HTMLDivElement | null>(null);
     const [showFloatingNewMessage, setShowFloatingNewMessage] = useState(false);
     const selectedGroupRef = useRef<ChatGroup | null>(selectedGroup);
+    const dateSeparatorRefs = useRef<{ [date: string]: HTMLDivElement | null }>({});
+    const [stickyDate, setStickyDate] = useState<string | null>(null);
+    const [firstVisibleDate, setFirstVisibleDate] = useState<string | null>(null);
 
     const currentNewMessageId = Object.keys(showNewMessageSeparator).find(
         id => showNewMessageSeparator[Number(id)]
@@ -56,27 +59,32 @@ function RoomChat({ onBack, onClose, selectedGroup, setSelectedGroup }: RoomChat
     const formatDate = (dateString: string) => {
         const messageDate = new Date(dateString);
         const today = new Date();
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterday = new Date();
+        yesterday.setDate(today.getDate() - 1);
 
         // Reset time to compare just dates
         const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
         const yesterdayDateOnly = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
-        const messageDateOnly = new Date(messageDate.getFullYear(), messageDate.getMonth(), messageDate.
-            getDate());
+        const messageDateOnly = new Date(messageDate.getFullYear(), messageDate.getMonth(), messageDate.getDate());
 
-        const date = new Date(today);
-        const formatter = new Intl.DateTimeFormat("en-US", {
+        // Format for today
+        const todayFormatted = new Intl.DateTimeFormat("en-US", {
             day: "numeric",
             month: "long",
             year: "numeric",
-        });
-        const formatted = formatter.format(date);
+        }).format(today);
+
+        // Format for yesterday
+        const yesterdayFormatted = new Intl.DateTimeFormat("en-US", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+        }).format(yesterday);
 
         if (messageDateOnly.getTime() === todayDateOnly.getTime()) {
-            return '━━━━━━━━━━━━ Today ' + formatted + ' ━━━━━━━━━━━━';
+            return '━━━━━━━━━━━━ Today ' + todayFormatted + ' ━━━━━━━━━━━━';
         } else if (messageDateOnly.getTime() === yesterdayDateOnly.getTime()) {
-            return '━━━━━━━━━━━━ Yesterday ' + formatted + ' ━━━━━━━━━━━━';
+            return '━━━━━━━━━━━━ Yesterday ' + yesterdayFormatted + ' ━━━━━━━━━━━━';
         } else {
             return messageDate.toLocaleDateString('en-US', {
                 weekday: 'long',
@@ -179,6 +187,79 @@ function RoomChat({ onBack, onClose, selectedGroup, setSelectedGroup }: RoomChat
         selectedGroupRef.current = selectedGroup;
     }, [selectedGroup]);
 
+    useEffect(() => {
+        const observer = new window.IntersectionObserver(
+            (entries) => {
+                // Find the last date separator that is above the top of the container (not visible)
+                const visibleDates = entries
+                    .filter(entry => entry.isIntersecting)
+                    .map(entry => entry.target.getAttribute('data-date'));
+
+                // If none are visible, use the last one that was scrolled past
+                if (visibleDates.length > 0) {
+                    setStickyDate(visibleDates[0]);
+                } else {
+                    // Find the last date separator above the viewport
+                    const above = entries
+                        .filter(entry => entry.boundingClientRect.top < 0)
+                        .map(entry => entry.target.getAttribute('data-date'));
+                    if (above.length > 0) {
+                        setStickyDate(above[above.length - 1]);
+                    }
+                }
+            },
+            {
+                root: chatMessagesContainerRef.current,
+                threshold: 0,
+            }
+        );
+
+        const refs = Object.values(dateSeparatorRefs.current);
+        refs.forEach(ref => {
+            if (ref) observer.observe(ref);
+        });
+
+        return () => {
+            refs.forEach(ref => {
+                if (ref) observer.unobserve(ref);
+            });
+            observer.disconnect();
+        };
+    }, [selectedGroup]);
+
+    useEffect(() => {
+        const observer = new window.IntersectionObserver(
+            (entries) => {
+                // Find the first date separator that is visible
+                const visible = entries
+                    .filter(entry => entry.isIntersecting)
+                    .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+                if (visible.length > 0) {
+                    setFirstVisibleDate(visible[0].target.getAttribute('data-date'));
+                } else {
+                    setFirstVisibleDate(null);
+                }
+            },
+            {
+                root: chatMessagesContainerRef.current,
+                threshold: 0,
+            }
+        );
+
+        const refs = Object.values(dateSeparatorRefs.current);
+        refs.forEach(ref => {
+            if (ref) observer.observe(ref);
+        });
+
+        return () => {
+            refs.forEach(ref => {
+                if (ref) observer.unobserve(ref);
+            });
+            observer.disconnect();
+        };
+    }, [selectedGroup]);
+
     const sendMessage = (message: string, postId?: number) => {
         console.log('sendMessage called with:', { message, postId, selectedGroup });
 
@@ -212,8 +293,8 @@ function RoomChat({ onBack, onClose, selectedGroup, setSelectedGroup }: RoomChat
             id: Date.now(), // Temporary ID
             name: 'You',
             lastMessage: message.trim(),
-            timestamp: time24h,
-            date: new Date().toISOString().split('T')[0],
+            timestamp: time24h, // current time
+            date: new Date().toISOString().split('T')[0], // current date (today)
             avatar: 'Y',
             unreadCount: 0,
             isNew: true,
@@ -437,9 +518,31 @@ function RoomChat({ onBack, onClose, selectedGroup, setSelectedGroup }: RoomChat
                     <div className="dialog-body" style={{ height: 540, overflowY: 'auto' }}>
                         <div className="chat-container">
                             <div className="chat-messages" ref={chatMessagesContainerRef}>
+                                {/* Only show sticky separator if it's not the same as the first visible in-list separator */}
+                                {stickyDate && stickyDate !== firstVisibleDate && (
+                                    <div
+                                        className="date-separator sticky"
+                                        style={{
+                                            position: 'sticky',
+                                            top: 0,
+                                            zIndex: 100,
+                                            background: 'white',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                                        }}
+                                    >
+                                        {formatDate(stickyDate)}
+                                    </div>
+                                )}
                                 {groupMessagesByDate(selectedGroup.chats).map((dateGroup) => (
                                     <div key={dateGroup.date}>
-                                        <div className="date-separator">{formatDate(dateGroup.date)}</div>
+                                        {/* Only show in-list separator at the start of each date group */}
+                                        <div
+                                            className="date-separator"
+                                            ref={el => { if (el) dateSeparatorRefs.current[dateGroup.date] = el; }}
+                                            data-date={dateGroup.date}
+                                        >
+                                            {formatDate(dateGroup.date)}
+                                        </div>
                                         {dateGroup.messages.map((chat: Chat) => (
                                             <div key={chat.id}>
                                                 {chat.isNew && showNewMessageSeparator[chat.id] && (
@@ -614,49 +717,49 @@ function RoomChat({ onBack, onClose, selectedGroup, setSelectedGroup }: RoomChat
                                                                     >
                                                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M2.73685 0.573059C1.35381 0.573059 0.222229 1.70464 0.222229 3.08768C0.222229 4.47072 1.35381 5.6023 2.73685 5.6023C4.11989 5.6023 5.25147 4.47072 5.25147 3.08768C5.25147 1.70464 4.11989 0.573059 2.73685 0.573059ZM17.8246 0.573059C16.4415 0.573059 15.3099 1.70464 15.3099 3.08768C15.3099 4.47072 16.4415 5.6023 17.8246 5.6023C19.2076 5.6023 20.3392 4.47072 20.3392 3.08768C20.3392 1.70464 19.2076 0.573059 17.8246 0.573059ZM7.76609 3.08768C7.76609 1.70464 8.89767 0.573059 10.2807 0.573059C11.6637 0.573059 12.7953 1.70464 12.7953 3.08768C12.7953 4.47072 11.6637 5.6023 10.2807 5.6023C8.89767 5.6023 7.76609 4.47072 7.76609 3.08768Z" fill="#4F4F4F" />
                                                                     </svg>
-                                                                    {/* {openDropdown === chat.id && (
-                                                                    <div style={{
-                                                                        position: 'absolute',
-                                                                        top: '20px',
-                                                                        right: '0',
-                                                                        backgroundColor: 'white',
-                                                                        border: '1px solid #E0E0E0',
-                                                                        borderRadius: '8px',
-                                                                        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-                                                                        zIndex: 1000,
-                                                                        minWidth: '120px'
-                                                                    }}>
-                                                                        <div
-                                                                            style={{
-                                                                                padding: '12px 16px',
-                                                                                cursor: 'pointer',
-                                                                                fontSize: '14px',
-                                                                                color: '#2F80ED',
-                                                                                borderBottom: '1px solid black'
-                                                                            }}
-                                                                            onClick={() => {
-                                                                                console.log('Share message:', chat.id);
-                                                                                setOpenDropdown(null);
-                                                                            }}
-                                                                        >
-                                                                            Share
+                                                                    {openDropdown === chat.id && (
+                                                                        <div style={{
+                                                                            position: 'absolute',
+                                                                            top: '20px',
+                                                                            right: '0',
+                                                                            backgroundColor: 'white',
+                                                                            border: '1px solid #E0E0E0',
+                                                                            borderRadius: '8px',
+                                                                            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                                                                            zIndex: 1000,
+                                                                            minWidth: '120px'
+                                                                        }}>
+                                                                            <div
+                                                                                style={{
+                                                                                    padding: '12px 16px',
+                                                                                    cursor: 'pointer',
+                                                                                    fontSize: '14px',
+                                                                                    color: '#2F80ED',
+                                                                                    borderBottom: '1px solid black'
+                                                                                }}
+                                                                                onClick={() => {
+                                                                                    console.log('Share message:', chat.id);
+                                                                                    setOpenDropdown(null);
+                                                                                }}
+                                                                            >
+                                                                                Share
+                                                                            </div>
+                                                                            <div
+                                                                                style={{
+                                                                                    padding: '12px 16px',
+                                                                                    cursor: 'pointer',
+                                                                                    fontSize: '14px',
+                                                                                    color: '#2F80ED'
+                                                                                }}
+                                                                                onClick={() => {
+                                                                                    console.log('Reply message:', chat.id);
+                                                                                    setOpenDropdown(null);
+                                                                                }}
+                                                                            >
+                                                                                Reply
+                                                                            </div>
                                                                         </div>
-                                                                        <div
-                                                                            style={{
-                                                                                padding: '12px 16px',
-                                                                                cursor: 'pointer',
-                                                                                fontSize: '14px',
-                                                                                color: '#2F80ED'
-                                                                            }}
-                                                                            onClick={() => {
-                                                                                console.log('Reply message:', chat.id);
-                                                                                setOpenDropdown(null);
-                                                                            }}
-                                                                        >
-                                                                            Reply
-                                                                        </div>
-                                                                    </div>
-                                                                )} */}
+                                                                    )}
                                                                 </div>
                                                             </>
                                                         )}

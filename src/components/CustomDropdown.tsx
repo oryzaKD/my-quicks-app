@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 const dropdownOptions = [
     { label: 'Important ASAP', color: '#EAF1FB', textColor: '#3B82F6' },
@@ -11,10 +12,17 @@ const dropdownOptions = [
     { label: 'Court Related', color: '#EAF1FB', textColor: '#3B82F6' },
 ];
 
-function CustomDropdown() {
+interface CustomDropdownProps {
+    value: string | null;
+    onChange: (value: string | null) => void;
+}
+
+function CustomDropdown({ onChange }: CustomDropdownProps) {
     const [open, setOpen] = useState(false);
     const [selected, setSelected] = useState<typeof dropdownOptions>([]);
     const ref = useRef<HTMLDivElement>(null);
+    const triggerRef = useRef<HTMLDivElement>(null);
+    const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -26,21 +34,42 @@ function CustomDropdown() {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    // Calculate dropdown position when open
+    useEffect(() => {
+        if (open && triggerRef.current) {
+            const rect = triggerRef.current.getBoundingClientRect();
+            setDropdownStyle({
+                position: 'absolute',
+                top: rect.bottom + window.scrollY,
+                left: rect.left + window.scrollX,
+                minWidth: rect.width,
+                zIndex: 1000,
+            });
+        }
+    }, [open]);
+
     // Add or remove badge
     const handleSelect = (option: typeof dropdownOptions[number]) => {
         if (!selected.some(sel => sel.label === option.label)) {
             setSelected([...selected, option]);
         }
         setOpen(false);
+        onChange(option.label);
     };
 
     // Remove badge
     const handleRemove = (label: string) => {
-        setSelected(selected.filter(sel => sel.label !== label));
+        const newSelected = selected.filter(sel => sel.label !== label);
+        setSelected(newSelected);
+        if (newSelected.length === 0) {
+            onChange(null); // No values left
+        } else {
+            onChange(newSelected[0].label); // Still have values
+        }
     };
 
     return (
-        <div ref={ref} style={{ position: 'relative', width: 500, display: 'flex' }}>
+        <div ref={ref} style={{ position: 'relative', width: '100%', display: 'flex' }}>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 4 }}>
                 {selected.map(option => (
                     <span
@@ -73,6 +102,7 @@ function CustomDropdown() {
                     </span>
                 ))}
                 <div
+                    ref={triggerRef}
                     onClick={() => setOpen(!open)}
                     style={{
                         background: '#f3f4f6',
@@ -91,19 +121,19 @@ function CustomDropdown() {
                     +
                 </div>
             </div>
-            {open && (
+            {open && createPortal(
                 <div
                     style={{
-                        position: 'absolute',
-                        top: '110%',
-                        left: 0,
-                        width: '50%',
+                        ...dropdownStyle,
                         background: '#fff',
                         border: '1px solid #ccc',
                         borderRadius: 8,
                         boxShadow: '0 2px 8px #0002',
-                        zIndex: 100,
                         padding: 8,
+                        zIndex: 2000,
+                        minWidth: 300,
+                        maxHeight: 160,
+                        overflowY: 'auto',
                     }}
                 >
                     {dropdownOptions
@@ -126,7 +156,8 @@ function CustomDropdown() {
                                 {option.label}
                             </div>
                         ))}
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );
