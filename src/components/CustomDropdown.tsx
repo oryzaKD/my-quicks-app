@@ -23,10 +23,16 @@ function CustomDropdown({ onChange }: CustomDropdownProps) {
     const ref = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLDivElement>(null);
     const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
+    const dropdownMenuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
-            if (ref.current && !ref.current.contains(event.target as Node)) {
+            if (
+                ref.current &&
+                !ref.current.contains(event.target as Node) &&
+                dropdownMenuRef.current &&
+                !dropdownMenuRef.current.contains(event.target as Node)
+            ) {
                 setOpen(false);
             }
         }
@@ -123,6 +129,7 @@ function CustomDropdown({ onChange }: CustomDropdownProps) {
             </div>
             {open && createPortal(
                 <div
+                    ref={dropdownMenuRef}
                     style={{
                         ...dropdownStyle,
                         background: '#fff',
